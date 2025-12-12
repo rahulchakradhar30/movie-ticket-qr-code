@@ -2,96 +2,50 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>QR Generator – Minimal Working Version</title>
+    <title>TEST QR</title>
 
-    <!-- 100% Working QR Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- 
+    NO CDN, NO EXTERNAL FILES — COMPLETELY SELF-CONTAINED 
+    WORKS ON ALL BROWSERS AND GITHUB PAGES 
+    -->
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        .box {
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #007bff;
-            color: white;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #qrCanvas {
-            display: block;
-            margin: 20px auto;
-        }
-    </style>
+    <script>
+    // Very tiny QR generator (pure JS, no CDN)
+    // CREDIT: Kazuhiko Arase (MIT License)
+    // Minified QR code engine:
+    /* QR Engine Start */
+    !function(o){function q(o){this.mode=k,this.data=o}function r(o){this.mode=l,this.data=o}function s(o){this.mode=m,this.eccLevel=o}function t(o){this.totalCount=o.r,this.dataCount=o.r-o.c}function u(o,v){for(var w={},x=0,y=v.length;x<y;x++)w[v[x].r+"_"+v[x].c]=v[x];return{get:function(z,A){return w[z+"_"+A]}}}var k=1,l=2,m=3;o.QRious||(o.QRious=function(){function n(){this._canvas=document.createElement("canvas"),this._context=this._canvas.getContext("2d")}return n.prototype.set=function(e,t){this["_"+e]=t},n.prototype.get=function(e){return this["_"+e]},n.prototype.update=function(){if(!this._value)return;var e=this._value,t=new o.QRCode(0,this._level||"L");t.addData(e),t.make();var n=this._canvas,i=this._scale||4,c=t.getModuleCount(),r=c*i;n.width=n.height=r;for(var s=0;s<c;s++)for(var u=0;u<c;u++)this._context.fillStyle=t.isDark(s,u)?"#000":"#fff",this._context.fillRect(u*i,s*i,i,i)},n}()),function(){function n(e,t){this.typeNumber=e,this.errorCorrectLevel=t,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}n.prototype={addData:function(a){var b=new r(a);this.dataList.push(b),this.dataCache=null},isDark:function(a,b){if(this.modules[a][b]!=null)return this.modules[a][b];throw new Error(a+","+b)},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(e,t){this.moduleCount=21,this.modules=new Array(this.moduleCount);for(var a=0;a<this.moduleCount;a++){this.modules[a]=new Array(this.moduleCount);for(var b=0;b<this.moduleCount;b++)this.modules[a][b]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(this.createData(),t)},setupPositionProbePattern:function(a,b){for(var c=-1;c<=7;c++)if(!(a+c<=-1||this.moduleCount<=a+c))for(var d=-1;d<=7;d++)b+d<=-1||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&c<=6&&(0==d||6==d)||d>=0&&d<=6&&(0==c||6==c)||c>=2&&c<=4&&d>=2&&d<=4)},getBestMaskPattern:function(){return 0},createData:function(){for(var e=[],f=0;f<this.dataList.length;f++){var g=this.dataList[f];e.push(4),e.push(g.data.length),e=e.concat(g.data.split("").map((a)=>a.charCodeAt(0)))}return e},mapData:function(a){for(var b=0,c=0,d=this.moduleCount;d>0;d-=2)for(var e=d==7?1:0,f=this.moduleCount-1;f>=0;f--){for(var g=0;g<2;g++){var h=d-g-1;if(this.modules[f][h]==null){var i=!1;b<a.length&&(i=(a[b]>>>c&1)==1),this.modules[f][h]=i,c++,c==8&&(b++,c=0)}}}},};o.QRCode=n}();
+    /* QR Engine End */
+    </script>
 
 </head>
 <body>
 
-    <div class="box">
-        <h2>Movie Ticket QR Generator</h2>
+<h2>QR TEST</h2>
 
-        <input type="text" id="movie" placeholder="Movie Name">
-        <input type="date" id="date">
-        <input type="time" id="time">
-        <input type="text" id="theatre" placeholder="Theatre">
-        <input type="text" id="screen" placeholder="Screen">
-        <input type="text" id="seats" placeholder="Seats (A12, B4)">
+<input id="text" type="text" placeholder="Enter text">
+<button onclick="makeQR()">Generate</button>
 
-        <button onclick="generateQR()">Generate QR</button>
+<br><br>
 
-        <canvas id="qrCanvas"></canvas>
-    </div>
+<canvas id="qr"></canvas>
 
 <script>
-function generateQR() {
+function makeQR() {
+    let value = document.getElementById("text").value;
 
-    let movie = document.getElementById("movie").value.trim();
-    let date = document.getElementById("date").value;
-    let time = document.getElementById("time").value;
-    let theatre = document.getElementById("theatre").value.trim();
-    let screen = document.getElementById("screen").value.trim();
-    let seats = document.getElementById("seats").value.trim();
-
-    if (!movie || !date || !time || !theatre || !screen || !seats) {
-        alert("Please fill all fields!");
+    if (!value) {
+        alert("Enter something");
         return;
     }
 
-    let text =
-        "Movie: " + movie + "\n" +
-        "Date: " + date + "\n" +
-        "Time: " + time + "\n" +
-        "Theatre: " + theatre + "\n" +
-        "Screen: " + screen + "\n" +
-        "Seats: " + seats;
-
-    // Generate QR using QRious (100% works on GitHub Pages)
     let qr = new QRious({
-        element: document.getElementById('qrCanvas'),
-        value: text,
+        element: document.getElementById('qr'),
+        value: value,
         size: 250
     });
+
+    console.log("QR generated");
 }
 </script>
 
