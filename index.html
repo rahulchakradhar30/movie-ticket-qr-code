@@ -1,233 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Ticket QR Code Generator</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <title>QR Generator – Minimal Working Version</title>
+
+    <!-- 100% Working QR Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: Arial, sans-serif;
             padding: 20px;
         }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            padding: 40px;
-            width: 100%;
-            max-width: 600px;
+
+        .box {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.2rem;
-            text-align: center;
-            font-weight: 700;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
+
         input {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
+            padding: 10px;
+            margin: 8px 0;
             font-size: 16px;
-            transition: border-color 0.3s ease;
         }
-        
-        input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
             color: white;
             border: none;
-            padding: 16px 32px;
             font-size: 18px;
-            font-weight: 600;
-            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            width: 100%;
             margin-top: 10px;
         }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-        
-        .qr-section {
-            margin-top: 30px;
-            display: none;
-            text-align: center;
-        }
-        
-        .qr-section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-        }
-        
-        .qr-container {
-            display: inline-block;
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        canvas {
-            margin: 0 auto;
+
+        #qrCanvas {
             display: block;
-        }
-        
-        .download-btn {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            margin-top: 20px;
+            margin: 20px auto;
         }
     </style>
+
 </head>
 <body>
 
-    <div class="container">
-        <h1>Movie Ticket QR Code Generator</h1>
-        
-        <div class="form-group">
-            <label>Enter the movie name:</label>
-            <input type="text" id="movieName">
-        </div>
+    <div class="box">
+        <h2>Movie Ticket QR Generator</h2>
 
-        <div class="form-group">
-            <label>Movie date:</label>
-            <input type="date" id="movieDate">
-        </div>
+        <input type="text" id="movie" placeholder="Movie Name">
+        <input type="date" id="date">
+        <input type="time" id="time">
+        <input type="text" id="theatre" placeholder="Theatre">
+        <input type="text" id="screen" placeholder="Screen">
+        <input type="text" id="seats" placeholder="Seats (A12, B4)">
 
-        <div class="form-group">
-            <label>Movie time:</label>
-            <input type="time" id="movieTime">
-        </div>
+        <button onclick="generateQR()">Generate QR</button>
 
-        <div class="form-group">
-            <label>Theatre:</label>
-            <input type="text" id="theatre">
-        </div>
-
-        <div class="form-group">
-            <label>Screen:</label>
-            <input type="text" id="screen">
-        </div>
-
-        <div class="form-group">
-            <label>Seats:</label>
-            <input type="text" id="seats">
-        </div>
-
-        <button class="btn" onclick="generateQR()">Generate QR Code</button>
-
-        <div class="qr-section" id="qrSection">
-            <h2>Your Movie Ticket QR Code</h2>
-            <div class="qr-container">
-                <canvas id="qrcode"></canvas>
-            </div>
-            <button class="btn download-btn" onclick="downloadQR()">Download QR Code</button>
-        </div>
+        <canvas id="qrCanvas"></canvas>
     </div>
 
 <script>
+function generateQR() {
 
-    // Set default date & time
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('movieDate').value = today;
+    let movie = document.getElementById("movie").value.trim();
+    let date = document.getElementById("date").value;
+    let time = document.getElementById("time").value;
+    let theatre = document.getElementById("theatre").value.trim();
+    let screen = document.getElementById("screen").value.trim();
+    let seats = document.getElementById("seats").value.trim();
 
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes() < 30 ? '00' : '30';
-    document.getElementById('movieTime').value = `${hours}:${minutes}`;
-
-    function generateQR() {
-
-        const movieName = document.getElementById('movieName').value.trim();
-        const movieDate = document.getElementById('movieDate').value;
-        const movieTime = document.getElementById('movieTime').value;
-        const theatre = document.getElementById('theatre').value.trim();
-        const screen = document.getElementById('screen').value.trim();
-        const seats = document.getElementById('seats').value.trim();
-
-        if (!movieName || !movieDate || !movieTime || !theatre || !screen || !seats) {
-            alert("Please fill all fields!");
-            return;
-        }
-
-        // Format date
-        const formattedDate = new Date(movieDate).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric'
-        });
-
-        // Format time
-        const formattedTime = new Date(`1970-01-01T${movieTime}`).toLocaleTimeString('en-US', {
-            hour: 'numeric', minute: '2-digit', hour12: true
-        });
-
-        const qrText =
-`Movie: ${movieName}
-Date: ${formattedDate}
-Time: ${formattedTime}
-Theatre: ${theatre}
-Screen: ${screen}
-Seats: ${seats}`;
-
-        const canvas = document.getElementById("qrcode");
-
-        // Clear previous QR
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Generate QR on canvas
-        QRCode.toCanvas(canvas, qrText, { width: 250, margin: 2 }, (error) => {
-            if (error) console.error(error);
-        });
-
-        document.getElementById("qrSection").style.display = "block";
+    if (!movie || !date || !time || !theatre || !screen || !seats) {
+        alert("Please fill all fields!");
+        return;
     }
 
-    function downloadQR() {
-        const canvas = document.getElementById("qrcode");
-        const link = document.createElement("a");
-        link.download = "movie-ticket-qr.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-    }
+    let text =
+        "Movie: " + movie + "\n" +
+        "Date: " + date + "\n" +
+        "Time: " + time + "\n" +
+        "Theatre: " + theatre + "\n" +
+        "Screen: " + screen + "\n" +
+        "Seats: " + seats;
 
+    // Generate QR using QRious (100% works on GitHub Pages)
+    let qr = new QRious({
+        element: document.getElementById('qrCanvas'),
+        value: text,
+        size: 250
+    });
+}
 </script>
 
 </body>
