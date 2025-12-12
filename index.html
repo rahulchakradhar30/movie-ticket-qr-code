@@ -4,50 +4,57 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Movie Ticket — Dark Ticket Generator</title>
+
+<!-- QRious CDN (stable and GitHub Pages friendly) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js" integrity="sha512-+bVbQn3zqXhQ5nY7mH3y8n2k8t8Qm0t7sX7qYF2gZqG3yZJgH3X9Yl5b1w5r7e6T8Y9yQk2hK4q2z9wQfQzQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <style>
   :root{
-    --bg:#0b0b0b;
-    --card:#0e0f12;
+    --bg:#05060a;
+    --panel:#0c1116;
     --muted:#9aa3ad;
     --accent:#ff6b6b;
-    --white:#ffffff;
+    --white:#fff;
   }
+  *{box-sizing:border-box}
   body{
     margin:0;
-    background:linear-gradient(180deg,#000,#071428);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1000px 600px at 10% 10%, #081220 0%, transparent 20%),
+                radial-gradient(800px 500px at 90% 90%, #08121a 0%, transparent 20%),
+                linear-gradient(180deg,#000,#071428 60%);
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color:var(--white);
     min-height:100vh;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:20px;
+    padding:28px;
   }
 
   .layout{
     width:100%;
     max-width:1100px;
     display:grid;
-    grid-template-columns:1fr 420px;
-    gap:24px;
+    grid-template-columns:1fr 460px;
+    gap:26px;
   }
 
   .panel{
-    background:linear-gradient(180deg,#0f1720,#0b1116);
+    background: linear-gradient(180deg,#07101a,#07111b);
     border-radius:12px;
     padding:18px;
-    box-shadow:0 12px 30px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   }
 
-  h2{ margin:0 0 6px 0; font-size:20px; }
-  p.hint{ color:var(--muted); margin-top:6px; font-size:13px; }
+  h2{ margin:0 0 6px; font-size:20px; color:#e9eef6; }
+  p.hint{ color:var(--muted); margin:6px 0 12px; font-size:13px; }
 
   label{ display:block; font-size:13px; color:var(--muted); margin-top:12px; margin-bottom:6px; }
-  input[type="text"], input[type="date"], input[type="time"], input[type="file"], input[type="number"]{
+  input[type="text"], input[type="date"], input[type="time"], input[type="file"]{
     width:100%;
     padding:10px 12px;
     border-radius:8px;
-    border:1px solid rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.04);
     background:rgba(255,255,255,0.02);
     color:var(--white);
     font-size:14px;
@@ -59,38 +66,35 @@
     padding:12px 14px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-size:14px;
   }
   .btn.primary{ background: linear-gradient(90deg,var(--accent),#ee5a24); color: #fff; flex:1; }
-  .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.08); color:var(--white); width:110px; }
+  .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--white); width:110px; }
 
   /* preview ticket */
   .preview-wrap{ display:flex; align-items:center; justify-content:center; }
   .ticket{
-    width:400px; background:#0c0c0c; border-radius:14px; padding:18px; box-shadow:0 14px 40px rgba(0,0,0,0.6);
-    color:#fff; position:relative; overflow:hidden;
+    width:420px; background:linear-gradient(180deg,#0a0a0b,#0b0b0d); border-radius:12px; padding:18px; box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    color:#fff; position:relative; overflow:hidden; font-size:14px;
   }
-  .ticket .top{
-    display:flex; gap:12px; align-items:center;
-  }
+  .ticket .top{ display:flex; gap:12px; align-items:center; }
   .poster{
-    width:62px; height:86px; border-radius:6px; background:linear-gradient(180deg,#222,#111);
-    overflow:hidden; flex:0 0 62px;
+    width:64px; height:92px; border-radius:6px; background:linear-gradient(180deg,#222,#111);
+    overflow:hidden; flex:0 0 64px; display:flex; align-items:center; justify-content:center;
   }
   .poster img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-  .title{ font-weight:800; font-size:16px; }
+  .title{ font-weight:800; font-size:16px; color:#fff; }
   .meta{ color:var(--muted); font-size:12px; margin-top:4px; }
 
-  .big-qr{ width:150px; height:150px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; margin:16px auto 8px auto; }
+  .big-qr{ width:160px; height:160px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; margin:16px auto 8px auto; }
 
-  .ticket .info{ text-align:center; margin-top:4px; }
-  .ticket .info .line{ font-size:13px; color:var(--muted); margin-top:6px; letter-spacing:1px; }
+  .ticket .info{ text-align:center; margin-top:6px; }
+  .ticket .info .line{ font-size:12px; color:var(--muted); margin-top:6px; letter-spacing:1px; }
   .ticket .info .value{ font-weight:800; font-size:14px; margin-top:6px; }
 
   .download{ display:block; margin-top:12px; background:linear-gradient(90deg,#2db04b,#178f2f); text-decoration:none; color:#fff; padding:10px; border-radius:8px; text-align:center; font-weight:800; }
 
-  /* small helper */
   .small{ font-size:12px; color:var(--muted); margin-top:8px; }
 
-  @media (max-width:920px){
+  @media (max-width:950px){
     .layout{ grid-template-columns:1fr; }
     .preview-wrap{ margin-top:18px; justify-content:center; }
   }
@@ -102,7 +106,7 @@
   <!-- Left: form -->
   <div class="panel">
     <h2>Movie Ticket — Dark Generator</h2>
-    <p class="hint">Upload poster (optional), fill details and generate a Zomato/District-style ticket with QR.</p>
+    <p class="hint">Upload poster (optional), fill details and generate a District-style ticket with QR.</p>
 
     <label>Movie Poster (optional)</label>
     <input id="posterFile" type="file" accept="image/*">
@@ -151,7 +155,7 @@
       <button class="btn ghost" onclick="resetAll()">Reset</button>
     </div>
 
-    <p class="small">After you generate, use the "Download Ticket" button on the right to save a full PNG of the ticket.</p>
+    <p class="small">After generate, click "Download Ticket" on the right to save a full PNG of the ticket.</p>
   </div>
 
   <!-- Right: preview -->
@@ -159,8 +163,7 @@
     <div class="ticket" id="ticketPreview" role="presentation">
       <div class="top">
         <div class="poster" id="posterPreview">
-          <!-- poster img goes here -->
-          <img id="posterImg" src="" alt="poster" style="display:none;">
+          <img id="posterImg" src="" alt="poster" style="display:none">
         </div>
         <div style="flex:1">
           <div class="title" id="pvTitle">Movie Title</div>
@@ -173,7 +176,7 @@
       </div>
 
       <div class="big-qr">
-        <canvas id="qrCanvas" width="150" height="150" aria-label="QR code"></canvas>
+        <canvas id="qrCanvas" width="140" height="140" aria-label="QR code"></canvas>
       </div>
 
       <div class="info">
@@ -195,17 +198,8 @@
   </div>
 </div>
 
-<!-- EMBEDDED QR ENGINE (same minimal engine used earlier) -->
 <script>
-(function(window){
-  !function(o){function q(o){this.mode=1,this.data=o}function r(o){this.mode=2,this.data=o}function s(o){this.mode=3,this.eccLevel=o}function t(o){this.totalCount=o.r,this.dataCount=o.r-o.c}o.QRious||(o.QRious=function(){function n(){this._canvas=document.createElement("canvas");this._context=this._canvas.getContext("2d")}return n.prototype.set=function(e,t){this["_"+e]=t},n.prototype.get=function(e){return this["_"+e]},n.prototype.update=function(){if(!this._value)return;var e=this._value,t=new o.QRCode(0,this._level||"L");t.addData(e),t.make();var n=this._canvas,i=this._scale||2,c=t.getModuleCount(),r=c*i;n.width=n.height=r;for(var s=0;s<c;s++)for(var u=0;u<c;u++)this._context.fillStyle=t.isDark(s,u)?"#000":"#fff",this._context.fillRect(u*i,s*i,i,i)},n}()),function(){function n(e,t){this.typeNumber=e,this.errorCorrectLevel=t,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}n.prototype={addData:function(a){var b=new r(a);this.dataList.push(b),this.dataCache=null},isDark:function(a,b){if(this.modules[a][b]!=null)return this.modules[a][b];throw new Error(a+","+b)},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(e,t){this.moduleCount=21,this.modules=new Array(this.moduleCount);for(var a=0;a<this.moduleCount;a++){this.modules[a]=new Array(this.moduleCount);for(var b=0;b<this.moduleCount;b++)this.modules[a][b]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(this.createData(),t)},setupPositionProbePattern:function(a,b){for(var c=-1;c<=7;c++)if(!(a+c<=-1||this.moduleCount<=a+c))for(var d=-1;d<=7;d++)b+d<=-1||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&c<=6&&(0==d||6==d)||d>=0&&d<=6&&(0==c||6==c)||c>=2&&c<=4&&d>=2&&d<=4)},getBestMaskPattern:function(){return 0},createData:function(){for(var e=[],f=0;f<this.dataList.length;f++){var g=this.dataList[f];e.push(4),e.push(g.data.length),e=e.concat(g.data.split("").map((a)=>a.charCodeAt(0)))}return e},mapData:function(a){for(var b=0,c=0,d=this.moduleCount;d>0;d-=2)for(var e=d==7?1:0,f=this.moduleCount-1;f>=0;f--){for(var g=0;g<2;g++){var h=d-g-1;if(this.modules[f][h]==null){var i=!1;b<a.length&&(i=(a[b]>>>c&1)==1),this.modules[f][h]=i,c++,c==8&&(b++,c=0)}}}},};o.QRCode=n}();
-})(window);
-</script>
-
-<script>
-/* Main JS */
 (function(){
-
   // Elements
   const posterFile = document.getElementById('posterFile');
   const posterImg = document.getElementById('posterImg');
@@ -221,7 +215,7 @@
   const pvBooking = document.getElementById('pvBooking');
   const qrCanvas = document.getElementById('qrCanvas');
 
-  // default values
+  // defaults
   function setDefaults(){
     const now = new Date();
     document.getElementById('movieDate').value = now.toISOString().split('T')[0];
@@ -232,26 +226,26 @@
   }
   setDefaults();
 
-  // handle poster upload (optional)
+  // poster handling
   let posterDataUrl = null;
   posterFile.addEventListener('change', function(ev){
     const f = ev.target.files && ev.target.files[0];
-    if(!f) { posterDataUrl = null; posterImg.style.display='none'; return; }
+    if(!f){ posterDataUrl = null; posterImg.style.display='none'; posterPreview.style.background = ''; return; }
     const reader = new FileReader();
     reader.onload = function(e){
       posterDataUrl = e.target.result;
       posterImg.src = posterDataUrl;
       posterImg.style.display = 'block';
+      posterPreview.style.background = '';
     };
     reader.readAsDataURL(f);
   });
 
-  // small helper: generate booking ID
   function genBooking(){
     return 'BK-' + Date.now().toString().slice(-10);
   }
 
-  // generate ticket preview and QR
+  // generate ticket + QR
   window.generateTicket = function(){
     try{
       const movieName = document.getElementById('movieName').value.trim() || 'Movie Title';
@@ -260,33 +254,37 @@
       const theatre = document.getElementById('theatre').value.trim() || 'Theatre Name';
       const screen = document.getElementById('screen').value.trim() || 'Screen-1';
       const seats = document.getElementById('seats').value.trim() || 'GOLD-B9';
-      const lang = document.getElementById('lang').value.trim() || '';
+      const lang = document.getElementById('lang').value.trim() || 'Telugu | 2D';
       const booking = document.getElementById('booking').value.trim() || genBooking();
 
-      // update preview
+      // update preview UI
       pvTitle.textContent = movieName;
       pvMeta.textContent = lang;
-      // format date
-      const dObj = new Date(movieDate + 'T' + movieTime);
-      pvDate.textContent = dObj.toLocaleDateString(undefined,{weekday:'short', day:'numeric', month:'short'});
-      pvTime.textContent = new Date('1970-01-01T' + movieTime).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      try{
+        const dObj = new Date(movieDate + 'T' + movieTime);
+        pvDate.textContent = dObj.toLocaleDateString(undefined,{weekday:'short', day:'numeric', month:'short'});
+        pvTime.textContent = new Date('1970-01-01T' + movieTime).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      }catch(e){
+        pvDate.textContent = movieDate || 'Date';
+        pvTime.textContent = movieTime || 'Time';
+      }
       pvScreen.textContent = screen.toUpperCase();
       pvSeats.textContent = seats.toUpperCase();
       pvTheatre.textContent = theatre;
       pvBooking.textContent = booking;
 
-      // draw poster if uploaded
+      // poster preview fallback
       if(posterDataUrl){
-        posterImg.onload = function(){ /* no-op, poster is shown automatically */ };
         posterImg.src = posterDataUrl;
         posterImg.style.display = 'block';
+        posterPreview.style.background = '';
       } else {
-        // show placeholder colored rectangle (hide img)
         posterImg.style.display = 'none';
-        posterPreview.style.background = 'linear-gradient(180deg,#222,#111)';
+        // gray gradient placeholder
+        posterPreview.style.background = 'linear-gradient(180deg,#2a2a2a,#111)';
       }
 
-      // compose QR text
+      // QR text to encode
       const qrText = [
         'BookingID:' + booking,
         'Movie:' + movieName,
@@ -297,25 +295,21 @@
         'Seats:' + seats
       ].join('\n');
 
-      // clear canvas
+      // clear canvas then draw
       const ctx = qrCanvas.getContext('2d');
       ctx.clearRect(0,0,qrCanvas.width, qrCanvas.height);
 
-      // draw QR using embedded engine (QRious-like)
-      new QRious({
-        element: qrCanvas,
-        value: qrText,
-        size: qrCanvas.width
-      });
+      // Use QRious (CDN) to draw on canvas
+      new QRious({ element: qrCanvas, value: qrText, size: qrCanvas.width });
 
-      console.log('QR generated ok');
+      console.log('QR generated');
     } catch(err){
       console.error('Failed to generate QR. See console for details.', err);
       alert('Failed to generate QR. See console for details.');
     }
   };
 
-  // Reset form
+  // reset
   window.resetAll = function(){
     document.getElementById('movieName').value = '';
     document.getElementById('theatre').value = '';
@@ -325,6 +319,7 @@
     posterFile.value = '';
     posterImg.src = '';
     posterImg.style.display = 'none';
+    posterPreview.style.background = '';
     setDefaults();
     pvTitle.textContent = 'Movie Title';
     pvMeta.textContent = 'Telugu | 2D';
@@ -338,143 +333,121 @@
     ctx.clearRect(0,0,qrCanvas.width, qrCanvas.height);
   };
 
-  // Download full ticket as PNG by drawing a fresh canvas
+  // download full ticket as PNG
   window.downloadTicket = function(ev){
     ev && ev.preventDefault && ev.preventDefault();
 
-    // ensure a QR exists
+    // ensure QR drawn
     const ctxCheck = qrCanvas.getContext('2d');
     try {
       const px = ctxCheck.getImageData(0,0,1,1).data;
       const blank = (px[3] === 0);
       if(blank){ alert('Please generate the QR code first.'); return; }
-    } catch(e){ /* ignore read errors */ }
+    } catch(e){ /* ignore */ }
 
-    // define final image size (portrait)
+    // target image size
     const W = 1000, H = 1600;
     const off = document.createElement('canvas');
     off.width = W; off.height = H;
     const ctx = off.getContext('2d');
 
-    // background dark rounded ticket
+    // background
     ctx.fillStyle = '#060609';
     ctx.fillRect(0,0,W,H);
 
-    // draw top title area
-    const pad = 60;
+    // inner card
+    const pad = 64;
     ctx.fillStyle = '#0f1113';
-    roundRect(ctx, pad/2, pad/2, W - pad, H - pad, 30, true, false);
+    roundRect(ctx, pad/2, pad/2, W - pad, H - pad, 28, true, false);
 
-    // left side: poster area rectangle
+    // poster block
     const posterW = 320, posterH = 460;
     const px = pad + 40, py = pad + 40;
-    // draw poster background card
-    ctx.fillStyle = '#080808';
-    roundRect(ctx, px-8, py-8, posterW + 16, posterH + 16, 14, true, false);
+    ctx.fillStyle = '#080808'; roundRect(ctx, px-8, py-8, posterW+16, posterH+16, 12, true, false);
 
+    // draw poster if present
     if(posterDataUrl){
-      // draw uploaded poster
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.onload = function(){
-        // fit image into poster area with cropping
+        // fit/crop center
         const ratio = Math.max(posterW / img.width, posterH / img.height);
         const sw = posterW / ratio, sh = posterH / ratio;
         const sx = (img.width - sw) / 2, sy = (img.height - sh) / 2;
         ctx.drawImage(img, sx, sy, sw, sh, px, py, posterW, posterH);
-        drawRestAndSave();
+        drawRightAndSave();
       };
       img.src = posterDataUrl;
     } else {
-      // placeholder poster (gradient)
+      // placeholder
       const g = ctx.createLinearGradient(px,py,px+posterW,py+posterH);
-      g.addColorStop(0,'#222');
-      g.addColorStop(1,'#111');
-      ctx.fillStyle = g;
-      roundRect(ctx, px, py, posterW, posterH, 8, true, false);
-      // add placeholder text
+      g.addColorStop(0,'#2a2a2a'); g.addColorStop(1,'#111');
+      ctx.fillStyle = g; roundRect(ctx, px, py, posterW, posterH, 10, true, false);
       ctx.fillStyle = '#777';
-      ctx.font = 'bold 22px Arial';
-      ctx.fillText('POSTER', px + 20, py + 40);
-      drawRestAndSave();
+      ctx.font = 'bold 22px Arial'; ctx.fillText('POSTER', px + 20, py + 40);
+      drawRightAndSave();
     }
 
-    function drawRestAndSave(){
-      // right column start
+    function drawRightAndSave(){
       const rx = px + posterW + 40;
       const rw = W - rx - pad;
-      // movie title
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 36px Arial';
-      wrapText(ctx, document.getElementById('pvTitle').textContent, rx, py + 10, rw-20, 38);
 
-      // meta line (lang / format)
-      ctx.fillStyle = '#bfbfbf';
-      ctx.font = '18px Arial';
-      ctx.fillText(document.getElementById('pvMeta').textContent, rx, py + 110);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 36px Arial';
+      wrapText(ctx, document.getElementById('pvTitle').textContent, rx, py + 10, rw-20, 40);
 
-      // date & time
-      ctx.fillStyle = '#fff';
-      ctx.font = '28px Arial';
-      ctx.fillText(document.getElementById('pvDate').textContent + '  |  ' + document.getElementById('pvTime').textContent, rx, py + 150);
+      ctx.fillStyle = '#bfbfbf'; ctx.font = '18px Arial';
+      ctx.fillText(document.getElementById('pvMeta').textContent, rx, py + 120);
+
+      ctx.fillStyle = '#fff'; ctx.font = '28px Arial';
+      ctx.fillText(document.getElementById('pvDate').textContent + '  |  ' + document.getElementById('pvTime').textContent, rx, py + 160);
 
       // theatre
-      ctx.fillStyle = '#d6d6d6';
-      ctx.font = '20px Arial';
-      ctx.fillText('THEATRE', rx, py + 210);
-      ctx.fillStyle = '#fff';
-      ctx.font = '22px Arial';
-      wrapText(ctx, document.getElementById('pvTheatre').textContent, rx, py + 238, rw-20, 26);
-
-      // seats & screen
-      ctx.fillStyle = '#d6d6d6'; ctx.font = '18px Arial';
-      ctx.fillText('SCREEN', rx, py + 330);
-      ctx.fillStyle = '#fff'; ctx.font = '22px Arial';
-      ctx.fillText(document.getElementById('pvScreen').textContent, rx, py + 358);
-
-      ctx.fillStyle = '#d6d6d6'; ctx.font = '18px Arial';
-      ctx.fillText('SEAT', rx, py + 400);
-      ctx.fillStyle = '#fff'; ctx.font = '22px Arial';
-      ctx.fillText(document.getElementById('pvSeats').textContent, rx, py + 428);
-
-      // Booking id
       ctx.fillStyle = '#bfbfbf'; ctx.font = '16px Arial';
-      ctx.fillText('Booking ID', rx, py + 480);
+      ctx.fillText('THEATRE', rx, py + 220);
       ctx.fillStyle = '#fff'; ctx.font = '20px Arial';
-      ctx.fillText(document.getElementById('pvBooking').textContent, rx, py + 506);
+      wrapText(ctx, document.getElementById('pvTheatre').textContent, rx, py + 246, rw-20, 24);
 
-      // draw QR (from qrCanvas)
+      // seat & screen
+      ctx.fillStyle = '#bfbfbf'; ctx.font = '16px Arial';
+      ctx.fillText('SCREEN', rx, py + 340);
+      ctx.fillStyle = '#fff'; ctx.font = '20px Arial';
+      ctx.fillText(document.getElementById('pvScreen').textContent, rx, py + 366);
+
+      ctx.fillStyle = '#bfbfbf'; ctx.font = '16px Arial';
+      ctx.fillText('SEAT', rx, py + 406);
+      ctx.fillStyle = '#fff'; ctx.font = '20px Arial';
+      ctx.fillText(document.getElementById('pvSeats').textContent, rx, py + 432);
+
+      ctx.fillStyle = '#bfbfbf'; ctx.font = '16px Arial';
+      ctx.fillText('Booking ID', rx, py + 476);
+      ctx.fillStyle = '#fff'; ctx.font = '18px Arial';
+      ctx.fillText(document.getElementById('pvBooking').textContent, rx, py + 504);
+
+      // QR from canvas
       const qrImg = new Image();
       qrImg.onload = function(){
-        // draw white rounded background then QR
-        const qsize = 360;
+        const qsize = 420;
         const qx = W/2 - qsize/2;
         const qy = py + posterH + 40;
-        // white box
-        ctx.fillStyle = '#fff';
-        roundRect(ctx, qx, qy, qsize, qsize, 22, true, false);
-        // draw QR image scaled into box with padding
-        const padInside = 28;
+        // white rounded box
+        ctx.fillStyle = '#fff'; roundRect(ctx, qx, qy, qsize, qsize, 28, true, false);
+        const padInside = 36;
         ctx.drawImage(qrImg, qx + padInside, qy + padInside, qsize - 2*padInside, qsize - 2*padInside);
 
-        // final footer (address)
-        ctx.fillStyle = '#bfbfbf';
-        ctx.font = '18px Arial';
-        const footerText = document.getElementById('pvTheatre').textContent;
-        wrapText(ctx, footerText, pad + 20, H - 140, W - 2*(pad+20), 22);
+        // footer theatre address (use pvTheatre)
+        ctx.fillStyle = '#bfbfbf'; ctx.font = '18px Arial';
+        wrapText(ctx, document.getElementById('pvTheatre').textContent, pad + 20, H - 140, W - 2*(pad+20), 22);
 
-        // save file
+        // download
         const data = off.toDataURL('image/png');
-        const a = document.createElement('a');
-        a.href = data; a.download = (document.getElementById('pvTitle').textContent || 'ticket') + '-ticket.png';
-        a.click();
+        const a = document.createElement('a'); a.href = data; a.download = (document.getElementById('pvTitle').textContent || 'ticket') + '-ticket.png'; a.click();
       };
-      // convert qrCanvas to dataURL
       qrImg.src = document.getElementById('qrCanvas').toDataURL('image/png');
     }
 
     // helpers
     function roundRect(ctx,x,y,w,h,r,fill,stroke){
-      if(typeof r==='undefined') r=5;
+      if(typeof r==='undefined') r=6;
       ctx.beginPath();
       ctx.moveTo(x+r,y);
       ctx.arcTo(x+w,y,x+w,y+h,r);
@@ -502,10 +475,10 @@
       }
       ctx.fillText(line, x, y);
     }
-
   };
 
 })();
 </script>
+
 </body>
 </html>
